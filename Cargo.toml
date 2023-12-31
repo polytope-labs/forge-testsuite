@@ -1,0 +1,14 @@
+[package]
+name = "forge-testsuite"
+version = "0.1.0"
+authors = ["Polytope Labs <hello@polytope.technology>"]
+description = "Utilities for writing and running solidity tests in rust"
+edition = "2021"
+
+[dependencies]
+forge = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
+foundry-common = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
+foundry-config = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
+foundry-evm = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
+ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "594627dc1c3b490ba8f513f8f5e23d11448cbcf8", features = ["ethers-solc"] }
+once_cell = "1.19.0"
