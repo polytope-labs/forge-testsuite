@@ -16,21 +16,10 @@
 //! Some utilities for testing solidity contracts in rust.
 //! It might be useful to test cryptographic code in solidity from rust generating the necessary
 //! proofs to be then verified.
-//!
-//! Ensure that your test crate lives within the solidity project such that the solidity project is
-//! one folder above your rust test crate. eg
-//! solidity/
-//! ├── src/
-//! ├── lib/
-//! ├── scripts/
-//! ├── rust-test-crate/
-//! │   ├── src/
-//! │   ├── Cargo.toml
-//! └── foundry.toml
 
 use ethers::{
     abi::{Detokenize, Tokenize},
-    solc::{remappings::Remapping, Project, ProjectCompileOutput, ProjectPathsConfig},
+    solc::{remappings::Remapping, Project, ProjectPathsConfig},
     types::{Log, U256},
 };
 use forge::{
@@ -44,19 +33,32 @@ use forge::{
 use foundry_config::{fs_permissions::PathPermission, Config, FsPermissions};
 use foundry_evm::{
     decode::decode_console_logs,
-    executor::{Backend, EvmError, ExecutorBuilder},
+    executor::{Backend, EvmError, ExecutorBuilder, SpecId},
     Address,
 };
 use once_cell::sync::Lazy;
-use std::{
-    fmt::Debug,
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fmt::Debug, fs, path::PathBuf};
 
-static PROJECT: Lazy<Project> = Lazy::new(|| {
-    // root should be configurable
-    let root = manifest_root();
+static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
+    env: Env {
+        gas_limit: 18446744073709551615,
+        chain_id: Some(foundry_common::DEV_CHAIN_ID),
+        tx_origin: Config::DEFAULT_SENDER,
+        block_number: 1,
+        block_timestamp: 1,
+        code_size_limit: Some(usize::MAX),
+        ..Default::default()
+    },
+    sender: Config::DEFAULT_SENDER,
+    initial_balance: U256::MAX,
+    ffi: true,
+    memory_limit: 2u64.pow(24),
+    ..Default::default()
+});
+
+/// Builds a non-tracing runner
+fn runner_with_root(root: PathBuf) -> MultiContractRunner {
+    dbg!(&root);
     let mut paths = ProjectPathsConfig::builder().root(root.clone()).build().unwrap();
 
     // parse remappings from remappings.txt.
@@ -81,58 +83,24 @@ static PROJECT: Lazy<Project> = Lazy::new(|| {
             paths.remappings.push(mapping)
         });
 
-    Project::builder().paths(paths).build().unwrap()
-});
+    let project = Project::builder().paths(paths).build().unwrap();
 
-static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
-    env: Env {
-        gas_limit: 18446744073709551615,
-        chain_id: Some(foundry_common::DEV_CHAIN_ID),
-        tx_origin: Config::DEFAULT_SENDER,
-        block_number: 1,
-        block_timestamp: 1,
-        code_size_limit: Some(usize::MAX),
-        ..Default::default()
-    },
-    sender: Config::DEFAULT_SENDER,
-    initial_balance: U256::MAX,
-    ffi: true,
-    memory_limit: 2u64.pow(24),
-    ..Default::default()
-});
-
-static COMPILED: Lazy<ProjectCompileOutput> = Lazy::new(|| {
-    let out = (*PROJECT).compile().unwrap();
-    if out.has_compiler_errors() {
-        eprintln!("{out}");
+    let compiled = project.compile().unwrap();
+    if compiled.has_compiler_errors() {
+        eprintln!("{compiled}");
         panic!("Compiled with errors");
     }
-    out
-});
 
-/// Builds a base runner
-fn base_runner() -> MultiContractRunnerBuilder {
-    MultiContractRunnerBuilder::default().sender(EVM_OPTS.sender)
-}
+    let mut config = Config::with_root(root.clone());
+    config.fs_permissions = FsPermissions::new(vec![PathPermission::read_write(root.clone())]);
+    config.allow_paths.push(root.clone());
 
-fn manifest_root() -> PathBuf {
-    let mut root = Path::new(env!("CARGO_MANIFEST_DIR"));
-
-    root = root.parent().unwrap();
-    root.to_path_buf()
-}
-
-/// Builds a non-tracing runner
-fn runner_with_config(mut config: Config) -> MultiContractRunner {
-    use foundry_evm::executor::SpecId;
-
-    config.allow_paths.push(manifest_root());
-
-    base_runner()
+    MultiContractRunnerBuilder::default()
+        .sender(EVM_OPTS.sender)
         .with_cheats_config(CheatsConfig::new(&config, &EVM_OPTS))
         .evm_spec(SpecId::MERGE)
         .sender(config.sender)
-        .build(&PROJECT.paths.root, (*COMPILED).clone(), EVM_OPTS.local_evm_env(), EVM_OPTS.clone())
+        .build(&project.paths.root, compiled.clone(), EVM_OPTS.local_evm_env(), EVM_OPTS.clone())
         .unwrap()
 }
 
@@ -155,11 +123,8 @@ impl AsMut<MultiContractRunner> for Runner {
 
 impl Runner {
     /// Builds a non-tracing runner
-    pub fn new() -> Self {
-        let mut config = Config::with_root(PROJECT.root());
-        config.fs_permissions =
-            FsPermissions::new(vec![PathPermission::read_write(manifest_root())]);
-        Self { runner: runner_with_config(config) }
+    pub fn new(root: PathBuf) -> Self {
+        Self { runner: runner_with_root(root) }
     }
 
     /// Deploy a contract with the provided name and return a handle for executing it's methods.
