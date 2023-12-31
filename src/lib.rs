@@ -33,17 +33,11 @@ use forge::{
 use foundry_config::{fs_permissions::PathPermission, Config, FsPermissions};
 use foundry_evm::{
     decode::decode_console_logs,
-    executor::{Backend, EvmError, ExecutorBuilder},
+    executor::{Backend, EvmError, ExecutorBuilder, SpecId},
     Address,
 };
 use once_cell::sync::Lazy;
-use std::{
-    fmt::Debug,
-    fs,
-    path::PathBuf,
-};
-use foundry_evm::executor::SpecId;
-
+use std::{fmt::Debug, fs, path::PathBuf};
 
 static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
     env: Env {
