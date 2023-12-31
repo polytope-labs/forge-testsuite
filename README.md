@@ -5,19 +5,6 @@ For example, it might be useful to test cryptographic code in solidity from rust
 proofs is possible so it can then be verified by your solidity contracts. This uses forge internally, so your solidity project
 should also be a foundry project as well.
 
-Ensure that your test crate lives within the solidity project such that the solidity project is
-one folder above your rust test crate. eg
-
-```
-solidity/
-├── src/
-├── lib/
-├── scripts/
-├── rust-test-crate/
-│   ├── src/
-│   ├── Cargo.toml
-└── foundry.toml
-```
 
 ## installation
 
@@ -35,7 +22,7 @@ use forge_testsuite::Runner;
 
 #[tokio::test]
 async fn contract_tests() -> Result<(), anyhow::Error> {
-    let mut runner = Runner::new();
+    let mut runner = Runner::new(PathBuf::from("/path/to/your/foundry/project"));
     
     // print a list of all detected test contracts
     println!("{:?}", runner.contracts);
