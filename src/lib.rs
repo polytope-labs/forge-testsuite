@@ -171,9 +171,9 @@ impl Runner {
 /// Handle for executing a single Contract.
 pub struct Contract<'a> {
     /// The contract runner
-    runner: ContractRunner<'a>,
+    pub runner: ContractRunner<'a>,
     /// The contract address
-    address: Address,
+    pub address: Address,
 }
 
 impl<'a> Contract<'a> {
