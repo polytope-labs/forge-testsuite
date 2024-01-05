@@ -38,6 +38,7 @@ use foundry_evm::{
 };
 use once_cell::sync::Lazy;
 use std::{fmt::Debug, fs, path::PathBuf};
+use ethers::solc::SolcConfig;
 
 static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
     env: Env {
@@ -58,7 +59,6 @@ static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
 
 /// Builds a non-tracing runner
 fn runner_with_root(root: PathBuf) -> MultiContractRunner {
-    dbg!(&root);
     let mut paths = ProjectPathsConfig::builder().root(root.clone()).build().unwrap();
 
     // parse remappings from remappings.txt.
@@ -87,8 +87,7 @@ fn runner_with_root(root: PathBuf) -> MultiContractRunner {
 
     let compiled = project.compile().unwrap();
     if compiled.has_compiler_errors() {
-        eprintln!("{compiled}");
-        panic!("Compiled with errors");
+        eprintln!("Compiler errors: {compiled}");
     }
 
     let mut config = Config::with_root(root.clone());
