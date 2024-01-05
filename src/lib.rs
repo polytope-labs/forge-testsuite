@@ -38,7 +38,6 @@ use foundry_evm::{
 };
 use once_cell::sync::Lazy;
 use std::{fmt::Debug, fs, path::PathBuf};
-use ethers::solc::SolcConfig;
 
 static EVM_OPTS: Lazy<EvmOpts> = Lazy::new(|| EvmOpts {
     env: Env {
