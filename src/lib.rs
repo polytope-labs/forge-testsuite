@@ -19,9 +19,9 @@
 
 use ethers::{
     abi::{Detokenize, Tokenize},
-    solc::{remappings::Remapping, Project, ProjectPathsConfig},
     types::{Log, U256},
 };
+use ethers_solc::{remappings::Remapping, Project, ProjectPathsConfig, SolcConfig};
 use forge::{
     executor::{
         inspector::CheatsConfig,
@@ -82,7 +82,15 @@ fn runner_with_root(root: PathBuf) -> MultiContractRunner {
             paths.remappings.push(mapping)
         });
 
-    let project = Project::builder().paths(paths).build().unwrap();
+    let mut config = SolcConfig::builder().build();
+    // enable the optimizer manually
+    config.settings.optimizer.enabled = Some(true);
+    let project = Project::builder()
+        .paths(paths)
+        .solc_config(config)
+        .set_auto_detect(true)
+        .build()
+        .unwrap();
 
     let compiled = project.compile().unwrap();
     if compiled.has_compiler_errors() {
