@@ -11,4 +11,5 @@ foundry-common = { git = "https://github.com/polytope-labs/foundry", rev = "acdf
 foundry-config = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
 foundry-evm = { git = "https://github.com/polytope-labs/foundry", rev = "acdfeeb24263903d5ab8135d67c42c8595f54192" }
 ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "594627dc1c3b490ba8f513f8f5e23d11448cbcf8", features = ["ethers-solc"] }
+ethers-solc = { git = "https://github.com/gakonst/ethers-rs", rev = "594627dc1c3b490ba8f513f8f5e23d11448cbcf8", features = ["svm-solc"] }
 once_cell = "1.19.0"

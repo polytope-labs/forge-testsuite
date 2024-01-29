@@ -1478,6 +1478,7 @@ name = "forge-testsuite"
 version = "0.1.0"
 dependencies = [
  "ethers",
+ "ethers-solc",
  "forge",
  "foundry-common",
  "foundry-config",
