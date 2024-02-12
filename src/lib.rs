@@ -94,7 +94,7 @@ fn runner_with_root(root: PathBuf) -> MultiContractRunner {
 
     let compiled = project.compile().unwrap();
     if compiled.has_compiler_errors() {
-        eprintln!("Compiler errors: {compiled}");
+        panic!("Compiler errors: {compiled}");
     }
 
     let mut config = Config::with_root(root.clone());
