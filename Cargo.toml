@@ -6,10 +6,10 @@ description = "Utilities for writing and running solidity tests in rust"
 edition = "2021"
 
 [dependencies]
-forge = { git = "https://github.com/polytope-labs/foundry", rev = "521813b3ebaf1aa05055d1780b555f9001071514" }
-foundry-common = { git = "https://github.com/polytope-labs/foundry", rev = "521813b3ebaf1aa05055d1780b555f9001071514" }
-foundry-config = { git = "https://github.com/polytope-labs/foundry", rev = "521813b3ebaf1aa05055d1780b555f9001071514" }
-foundry-evm = { git = "https://github.com/polytope-labs/foundry", rev = "521813b3ebaf1aa05055d1780b555f9001071514" }
-ethers = { git = "https://github.com/polytope-labs/ethers-rs", rev = "a61f4fd78cd9a417c74a1609e5007e17f0f0ebb4", features = ["ethers-solc"] }
-ethers-solc = { git = "https://github.com/polytope-labs/ethers-rs", rev = "a61f4fd78cd9a417c74a1609e5007e17f0f0ebb4", features = ["svm-solc"] }
+forge = { git = "https://github.com/polytope-labs/foundry", rev = "1db7f747d7033a760c747fabbeef706576c88e34" }
+foundry-common = { git = "https://github.com/polytope-labs/foundry", rev = "1db7f747d7033a760c747fabbeef706576c88e34" }
+foundry-config = { git = "https://github.com/polytope-labs/foundry", rev = "1db7f747d7033a760c747fabbeef706576c88e34" }
+foundry-evm = { git = "https://github.com/polytope-labs/foundry", rev = "1db7f747d7033a760c747fabbeef706576c88e34" }
+ethers = { git = "https://github.com/polytope-labs/ethers-rs", rev = "45239225c50247e049892125d281442c084a2a92", features = ["ethers-solc"] }
+ethers-solc = { git = "https://github.com/polytope-labs/ethers-rs", rev = "45239225c50247e049892125d281442c084a2a92", features = ["svm-solc"] }
 once_cell = "1.19.0"
