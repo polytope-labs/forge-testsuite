@@ -104,7 +104,7 @@ fn runner_with_root(root: PathBuf) -> MultiContractRunner {
     MultiContractRunnerBuilder::default()
         .sender(EVM_OPTS.sender)
         .with_cheats_config(CheatsConfig::new(&config, &EVM_OPTS))
-        .evm_spec(SpecId::MERGE)
+        .evm_spec(SpecId::LATEST)
         .sender(config.sender)
         .build(&project.paths.root, compiled.clone(), EVM_OPTS.local_evm_env(), EVM_OPTS.clone())
         .unwrap()
@@ -202,8 +202,9 @@ impl<'a> Contract<'a> {
 
         match &result {
             Ok(call) => print_logs(func, call.gas_used, &call.logs),
-            Err(EvmError::Execution(execution)) =>
-                print_logs(func, execution.gas_used, &execution.logs),
+            Err(EvmError::Execution(execution)) => {
+                print_logs(func, execution.gas_used, &execution.logs)
+            },
             _ => {},
         };
 
